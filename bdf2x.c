@@ -149,6 +149,17 @@ void bdf2x_double_bits(char* start)
     puts(buf);
 }
 
+// Checks if the first `n` bytes of `buf` are equal to the entirety of `str`.
+static inline
+int bufcmp(char* buf, const char* str, size_t n)
+{
+    char c = buf[n];
+    buf[n] = '\0';
+    int result = strcmp(buf, str);
+    buf[n] = c;
+    return result;
+}
+
 int main(int argc, char* argv[])
 {
     FILE* f;
@@ -188,27 +199,27 @@ int main(int argc, char* argv[])
             goto continueloop;
         }
 
-        if (!strncmp(start, "FONT", n)) {
+        if (!bufcmp(start, "FONT", n)) {
             bdf2x_font_name(end);
             continue;
         }
 
-        if (!strncmp(start, "CAP_HEIGHT", n) ||
-            !strncmp(start, "POINT_SIZE", n) ||
-            !strncmp(start, "X_HEIGHT", n) ||
-            !strncmp(start, "QUAD_WIDTH", n) ||
-            !strncmp(start, "FONT_DESCENT", n) ||
-            !strncmp(start, "FONT_ASCENT", n) ||
-            !strncmp(start, "SWIDTH", n) ||
-            !strncmp(start, "DWIDTH", n) ||
-            !strncmp(start, "BBX", n) ||
-            !strncmp(start, "SIZE", n) ||
-            !strncmp(start, "FONTBOUNDINGBOX", n))
+        if (!bufcmp(start, "CAP_HEIGHT", n) ||
+            !bufcmp(start, "POINT_SIZE", n) ||
+            !bufcmp(start, "X_HEIGHT", n) ||
+            !bufcmp(start, "QUAD_WIDTH", n) ||
+            !bufcmp(start, "FONT_DESCENT", n) ||
+            !bufcmp(start, "FONT_ASCENT", n) ||
+            !bufcmp(start, "SWIDTH", n) ||
+            !bufcmp(start, "DWIDTH", n) ||
+            !bufcmp(start, "BBX", n) ||
+            !bufcmp(start, "SIZE", n) ||
+            !bufcmp(start, "FONTBOUNDINGBOX", n))
         {
             int only_first;
             int multiplier = 2;
 
-            only_first = !strncmp(start, "SIZE", n);
+            only_first = !bufcmp(start, "SIZE", n);
 
             fwrite(start, n, 1, stdout);
             start += strcspn(start, WHITESPACE);
@@ -229,11 +240,11 @@ int main(int argc, char* argv[])
             continue;
         }
 
-        if (!strncmp(start, "BITMAP", n)) {
+        if (!bufcmp(start, "BITMAP", n)) {
             in_bitmap = 1;
         }
 
-        else if (!strncmp(start, "ENDCHAR", n)) {
+        else if (!bufcmp(start, "ENDCHAR", n)) {
             in_bitmap = 0;
         }
 
